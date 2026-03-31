@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hey Mom</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --rose: #f9a8c9;
+    --rose-deep: #e07fa8;
+    --rose-dark: #8b3a5a;
+    --cream: #fdf6f0;
+    --warm-gray: #8a7a72;
+    --text-dark: #2e1f1a;
+    --card-bg: rgba(255,255,255,0.75);
+    --border: rgba(224,127,168,0.25);
+  }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background-image:
+      radial-gradient(ellipse at 20% 20%, rgba(249,168,201,0.18) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 80%, rgba(224,127,168,0.12) 0%, transparent 55%);
+  }
+  .container { width: 100%; max-width: 560px; }
+  .header { text-align: center; margin-bottom: 2.5rem; }
+  .header h1 {
+    font-family: 'Lora', serif;
+    font-size: clamp(1.9rem, 5vw, 2.6rem);
+    font-weight: 400;
+    color: var(--text-dark);
+    line-height: 1.2;
+  }
+  .header h1 em { font-style: italic; color: var(--rose-dark); }
+  .header .sublabel {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    color: var(--rose-deep);
+    margin-top: 0.6rem;
+  }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    backdrop-filter: blur(8px);
+    margin-bottom: 1.25rem;
+  }
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--warm-gray);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .setup-banner {
+    background: rgba(249,168,201,0.12);
+    border: 1px solid rgba(224,127,168,0.3);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+    font-size: 13px;
+    color: var(--rose-dark);
+    line-height: 1.6;
+  }
+  .setup-banner strong { font-weight: 500; }
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    background: rgba(255,255,255,0.5);
+  }
+  .upload-zone:hover, .upload-zone.drag-over {
+    border-color: var(--rose-deep);
+    background: rgba(249,168,201,0.07);
+  }
+  .upload-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+  .upload-icon { font-size: 28px; margin-bottom: 0.5rem; display: block; }
+  .upload-zone p { font-size: 13px; color: var(--warm-gray); line-height: 1.5; }
+  .upload-zone p strong { color: var(--rose-dark); font-weight: 500; }
+  .file-selected {
+    margin-top: 0.75rem;
+    padding: 8px 12px;
+    background: rgba(249,168,201,0.15);
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--rose-dark);
+    display: none;
+  }
+  .file-selected.show { display: block; }
+  .voice-name-wrap { margin-top: 0.75rem; }
+  .voice-name-wrap input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    background: rgba(255,255,255,0.8);
+    color: var(--text-dark);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .voice-name-wrap input:focus { border-color: var(--rose-deep); }
+  .hint { font-size: 11.5px; color: var(--warm-gray); margin-top: 0.4rem; font-style: italic; }
+  textarea {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-family: 'Lora', serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-dark);
+    background: rgba(255,255,255,0.8);
+    resize: vertical;
+    min-height: 110px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  textarea:focus { border-color: var(--rose-deep); }
+  textarea::placeholder { color: var(--warm-gray); font-style: italic; }
+  .btn-generate {
+    width: 100%;
+    padding: 15px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(135deg, var(--rose-deep) 0%, var(--rose-dark) 100%);
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    letter-spacing: 0.01em;
+  }
+  .btn-generate:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(139,58,90,0.3);
+  }
+  .btn-generate:active:not(:disabled) { transform: translateY(0); }
+  .btn-generate:disabled { opacity: 0.55; cursor: not-allowed; }
+  .status {
+    text-align: center;
+    font-size: 13px;
+    color: var(--warm-gray);
+    padding: 0.5rem 0;
+    min-height: 1.5rem;
+    display: none;
+  }
+  .status.show { display: block; }
+  .status.error { color: #c0392b; }
+  .status.success { color: #27ae60; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  .player-wrap { display: none; margin-top: 0; }
+  .player-wrap.show { display: block; }
+  .player-label { font-size: 12px; color: var(--warm-gray); margin-bottom: 0.5rem; text-align: center; }
+  audio { width: 100%; border-radius: 10px; accent-color: var(--rose-deep); }
+  .setup-section { display: none; }
+  .setup-section.show { display: block; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>Hey Mom, what do<br>you want to <em>say?</em></h1>
+    <div class="sublabel">WITH LOVE FROM SUTTON</div>
+  </div>
+
+  <div class="setup-section" id="setupSection">
+    <div class="setup-banner">
+      <strong>One-time setup:</strong> upload a voice sample below to clone Mom's voice.
+      After that, anyone with this link can use the app — no setup needed.
+    </div>
+    <div class="card">
+      <div class="section-label">Upload a voice sample</div>
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="audioFile" accept="audio/*" onchange="onFileSelected(this)" />
+        <span class="upload-icon">🎙</span>
+        <p><strong>Click to upload</strong> or drag an audio file here<br>
+        MP3, WAV, M4A, FLAC · ideally 30 sec – 3 min of clear speech</p>
+      </div>
+      <div class="file-selected" id="fileSelected"></div>
+      <div class="voice-name-wrap">
+        <input type="text" id="voiceName" placeholder="Voice name" value="Mom" />
+      </div>
+      <p class="hint" style="margin-top:0.75rem;">Upload once, then share the Replit URL with anyone.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-label">What would you like to say?</div>
+    <textarea id="textInput" placeholder="Type a message here… it will be spoken in Mom's voice."></textarea>
+  </div>
+
+  <button class="btn-generate" id="generateBtn" onclick="generate()">
+    <div class="spinner" id="spinner"></div>
+    <span id="btnLabel">✦ Speak it</span>
+  </button>
+
+  <div class="status" id="status"></div>
+
+  <div class="card player-wrap" id="playerWrap" style="margin-top:1rem;">
+    <div class="player-label">Listen to the message ♡</div>
+    <audio id="audioPlayer" controls></audio>
+  </div>
+
+</div>
+
+<script>
+  let clonedVoiceId = sessionStorage.getItem('session_voice_id') || null;
+
+  async function checkStatus() {
+    try {
+      const res = await fetch('/api/status');
+      const data = await res.json();
+      if (!data.voiceReady && !clonedVoiceId) {
+        document.getElementById('setupSection').classList.add('show');
+      }
+    } catch(e) {}
+  }
+
+  checkStatus();
+
+  const zone = document.getElementById('uploadZone');
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const f = e.dataTransfer.files[0];
+    if (f) { document.getElementById('audioFile').files = e.dataTransfer.files; onFileSelected(null, f); }
+  });
+
+  function onFileSelected(input, file) {
+    const f = file || (input && input.files[0]);
+    if (!f) return;
+    const el = document.getElementById('fileSelected');
+    el.textContent = `✓ ${f.name} (${(f.size/1024/1024).toFixed(2)} MB)`;
+    el.classList.add('show');
+  }
+
+  function showStatus(msg, type = '') {
+    const s = document.getElementById('status');
+    s.textContent = msg;
+    s.className = 'status show ' + type;
+  }
+
+  function setLoading(on, label = '✦ Speak it') {
+    const btn = document.getElementById('generateBtn');
+    document.getElementById('spinner').style.display = on ? 'block' : 'none';
+    document.getElementById('btnLabel').textContent = on ? label : '✦ Speak it';
+    btn.disabled = on;
+  }
+
+  async function cloneVoice() {
+    const file = document.getElementById('audioFile').files[0];
+    if (!file) throw new Error('Please upload an audio file first.');
+    const voiceName = document.getElementById('voiceName').value.trim() || 'Mom';
+
+    showStatus('Uploading voice sample…');
+    setLoading(true, 'Cloning voice…');
+
+    const fd = new FormData();
+    fd.append('audio', file, file.name);
+    fd.append('voiceName', voiceName);
+
+    const res = await fetch('/api/clone-voice', { method: 'POST', body: fd });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Voice clone failed.');
+
+    sessionStorage.setItem('session_voice_id', data.voiceId);
+    document.getElementById('setupSection').classList.remove('show');
+    return data.voiceId;
+  }
+
+  async function generate() {
+    const text = document.getElementById('textInput').value.trim();
+    if (!text) { showStatus('Please type something to say.', 'error'); return; }
+
+    try {
+      const fileInput = document.getElementById('audioFile');
+      if (!clonedVoiceId && fileInput.files[0]) {
+        clonedVoiceId = await cloneVoice();
+      }
+
+      showStatus('Generating speech…');
+      setLoading(true, 'Speaking…');
+
+      const body = { text };
+      if (clonedVoiceId) body.voiceId = clonedVoiceId;
+
+      const res = await fetch('/api/speak', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Speech generation failed.');
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const player = document.getElementById('audioPlayer');
+      player.src = url;
+      document.getElementById('playerWrap').classList.add('show');
+      player.play();
+
+      showStatus('Ready to listen ♡', 'success');
+    } catch(e) {
+      showStatus(e.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+  }
+</script>
+</body>
+</html>
